@@ -1,5 +1,6 @@
 require('rspec')
 require('dictionary')
+require('word')
 
 
 describe Term do
@@ -51,6 +52,17 @@ describe Term do
       test_term.add_lang('spanglish')
       test_term.word.should(eq(['word', 'spanglish']))
     end
+  end
+end
+
+describe Word do
+  it('should intialize and instance of Word') do
+    test_word = Word.new('word', 'language')
+    test_word.should(be_an_instance_of(Word))
+  end
+  it('should intialize and instance of word and language') do
+    test_word = Word.new('apple', 'English')
+    test_word.word.should(eq('apple'))
   end
 end
 
