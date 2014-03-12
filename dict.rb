@@ -11,6 +11,7 @@ def main_menu
     puts "L - List your terms"
     puts "E - Edit a term"
     puts "D - Delete a term"
+    puts "S - Search for a term"
     puts "X - Exit"
   end
   input = gets.chomp.upcase
@@ -22,6 +23,10 @@ def main_menu
   when 'E'
     edit_term
   when 'X'
+  when 'D'
+    delete_term
+  when 'S'
+    show_def
   else
     puts "invalid input"
     main_menu
@@ -41,19 +46,18 @@ def add_word
 end
 
 def show_terms
-  puts "\n\nDictionary Terms"
+  puts "\n\nDictionary Terms:\n\n"
   Term.terms.each do |term|
     puts "#{term.word}"
   end
   puts "---------------------\n\n"
+  main_menu
+end
+
+def show_def
   puts "type a word to see its definition"
   prompt
   word = gets.chomp.downcase
-  show_def(word)
-
-end
-
-def show_def(word)
   found = find(word).pop
   if found != nil
     puts "\n\n#{found.word}: #{found.definition}\n\n"
@@ -76,6 +80,26 @@ def edit_term
   end
 main_menu()
 end
+
+def delete_term
+  puts "Enter a word to delete"
+  prompt
+  word = gets.chomp
+  found = find(word).pop
+  if found != nil
+    puts "\nAre you sure you want to delete #{word}? y "
+    prompt
+    if gets.chomp.downcase == 'y'
+      Term.terms.delete(find(word).pop)
+      puts "\n\nThat term has been deleted\n\n"
+      main_menu
+    end
+  else
+    puts "\n\nThat word is not in your dictionary\n\n"
+    main_menu
+  end
+end
+
 
 def find(input)
   Term.terms.select do | val |
