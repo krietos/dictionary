@@ -1,4 +1,6 @@
 require './lib/dictionary'
+require './lib/word'
+require './lib/definition'
 require 'colorize'
 
 def prompt
@@ -44,18 +46,26 @@ def add_word
   prompt
   word = gets.chomp.downcase
   puts word
+  puts "Now add a language for the word"
+  prompt
+  language = gets.chomp
+  new_word = Word.create(word, language)
   puts "Now add a definition for the word"
   prompt
   definition = gets.chomp
-  new_term = Term.create(word, definition)
-  puts "\n\n\nYou added #{new_term.word[0]} to your dictionary!"
+  puts "Now add a language for the definition"
+  prompt
+  language = gets.chomp
+  new_def = Definition.new(definition, language)
+  new_term = Term.create(new_word, new_def)
+  puts "\n\n\nYou added #{new_term.word.content} to your dictionary!"
   main_menu()
 end
 
 def show_terms
   puts "\n\nDictionary Terms:\n\n"
   Term.terms.each do |term|
-    puts "#{term.word[0]}"
+    puts "#{term.word.content}"
   end
   puts "---------------------\n\n"
   main_menu
@@ -68,11 +78,11 @@ def show_def
   word = gets.chomp.downcase
   found = find(word).pop
   if found != nil
-    found.word.each_with_index do | val, ind |
+    found.word.all_content.each_with_index do | val, ind |
       lang_string += "#{val} "
     end
     puts lang_string
-    found.definition.each_with_index do | val, ind |
+    found.definition.all_content.each_with_index do | val, ind |
       puts "#{ind+1}: #{val}"
     end
   else
@@ -88,14 +98,14 @@ def edit_term
   found = find(input).pop
   if found != nil
     puts "\n\n#{input}"
-    found.definition.each_with_index do | val, ind |
+    found.definition.all_content.each_with_index do | val, ind |
       puts "#{ind+1}: #{val}"
     end
     puts "Enter the number of the definition you want to change"
     index = gets.chomp.to_i-1
     puts "Enter a new definition"
-    found.change_def(gets.chomp, index)
-    puts "\n\n#{input}: #{found.definition[index]}\n\n"
+    found.definition.change_content(gets.chomp, index)
+    puts "\n\n#{input}: #{found.definition.all_content[index]}\n\n"
   else
     puts "invalid input"
   end
@@ -128,10 +138,10 @@ def add_new_def
   if found != nil
     puts "Enter a new definition for your word."
   prompt
-  found.add_def(gets.chomp)
+  found.definition.add_content(gets.chomp)
   puts "Definition added!"
-  puts "\n\n#{found.word}:"
-    found.definition.each_with_index do | val, ind |
+  puts "\n\n#{found.word.content}:"
+    found.definition.all_content.each_with_index do | val, ind |
       puts "#{ind+1}: #{val}"
     end
   else
@@ -148,7 +158,7 @@ def add_language
   if found != nil
     puts "Enter the word in another language."
     prompt
-    found.add_lang(gets.chomp)
+    found.word.content(gets.chomp)
     puts "Language added!"
     found.word.each do | val |
       puts val
@@ -163,7 +173,7 @@ end
 
 def find(input)
   Term.terms.select do | val |
-    val.word.include?(input.downcase)
+    val.word.content.include?(input.downcase)
   end
 end
 

@@ -1,8 +1,8 @@
 class Term
   @@terms = []
   def initialize(word, definition)
-    @word = [word]
-    @definition = [definition]
+    @word = word
+    @definition = definition
   end
 
   def word
@@ -12,7 +12,6 @@ class Term
   def add_lang(new_lang)
     @word << new_lang
   end
-
   def definition
     @definition
   end
